@@ -1,0 +1,52 @@
+# import requests
+# from bs4 import BeautifulSoup
+# import pandas as pd
+
+# url = "https://www.indiamart.com/proddetail/dtf-printing-service-26398793233.html"
+# webpage = requests.get(url)
+# soup = BeautifulSoup(webpage.content, "html.parser")
+
+# titles = soup.find_all("a", attrs={'class': 'color6 pd_txu'})
+# localities = soup.find_all("span", attrs={'class': 'city_name color5 line_clamp_2'})
+
+# # Iterate over each element and extract its text
+# names = [title.text.strip() for title in titles]
+# locality = [local.text.strip() for local in localities]
+
+# #Print names and localities line by line
+# for name, loc in zip(names, locality):
+#      print(f"Name: {name}\nLocation: {loc}\n")
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+url = "https://www.tradeindia.com/noida/paper-printing-services-city-209017.html"
+webpage = requests.get(url)
+soup = BeautifulSoup(webpage.content, "html.parser")
+
+# Extracting name of printing service
+name_elems = soup.find_all("h3", class_='sc-99c38e0-14 jABSuU mt-2 Body4R coy-name')
+price_elems = soup.find_all("p", class_='sc-99c38e0-14 jARKuT Body3R mb-1')
+location_elems = soup.find_all("span", class_='sc-99c38e0-14 fZNuPr mb-1 Body4R')
+
+# Extracting text from elements
+names = [name.text.strip() for name in name_elems] if name_elems else []
+prices = [price.text.strip() for price in price_elems] if price_elems else []
+locations = [loc.text.strip() for loc in location_elems] if location_elems else []
+
+# Fill missing values with a placeholder
+max_length = max(len(names), len(prices), len(locations))
+names += ['Not available'] * (max_length - len(names))
+prices += ['Not available'] * (max_length - len(prices))
+locations += ['Not available'] * (max_length - len(locations))
+
+# Create DataFrame
+df = pd.DataFrame({'Name': names, 'Location': locations, 'Price': prices})
+
+# Save DataFrame to an Excel file
+df.to_excel("printing_services_noida.xlsx", index=False)
+
+df.to_csv('printing_ind.csv', index=False)
+print("Data saved successfully.")
+
+
